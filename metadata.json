@@ -1,0 +1,5 @@
+{
+  "name": "Dev Construction & Sales",
+  "description": "Enterprise-grade construction material marketplace and e-Kart logistics engine.",
+  "requestFramePermissions": ["geolocation"]
+}

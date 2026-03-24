@@ -1,0 +1,72 @@
+{
+  "entities": {
+    "Product": {
+      "title": "Product",
+      "description": "Construction material product",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "category": { "type": "string", "enum": ["Binding", "Structural", "Aggregates"] },
+        "price": { "type": "number" },
+        "unit": { "type": "string" },
+        "stock": { "type": "number" }
+      },
+      "required": ["name", "category", "price", "unit"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer order for materials",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "items": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "productId": { "type": "string" },
+              "quantity": { "type": "number" },
+              "price": { "type": "number" }
+            }
+          }
+        },
+        "total": { "type": "number" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "out-for-delivery", "delivered"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "items", "total", "status", "createdAt"]
+    },
+    "Vehicle": {
+      "title": "Vehicle",
+      "description": "e-Kart delivery vehicle",
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["Tipper", "Flatbed", "Crane-truck"] },
+        "capacity": { "type": "number" },
+        "status": { "type": "string", "enum": ["available", "busy", "maintenance"] },
+        "currentLocation": {
+          "type": "object",
+          "properties": {
+            "lat": { "type": "number" },
+            "lng": { "type": "number" }
+          }
+        }
+      },
+      "required": ["type", "capacity", "status"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Collection of construction materials"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Customer orders and tracking info"
+    },
+    "/vehicles/{vehicleId}": {
+      "schema": "Vehicle",
+      "description": "e-Kart logistics fleet"
+    }
+  }
+}

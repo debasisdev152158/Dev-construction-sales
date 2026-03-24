@@ -1,0 +1,43 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && 
+        (get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+         request.auth.token.email == "debasisdev152158@gmail.com");
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // Products: Publicly readable, only admin can write
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Orders: Users can read/write their own orders, admin can manage all
+    match /orders/{orderId} {
+      allow read: if isAuthenticated() && (request.auth.uid == resource.data.userId || isAdmin());
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
+    // Vehicles: Publicly readable tracking, only admin can manage
+    match /vehicles/{vehicleId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    // Users: Private profile
+    match /users/{userId} {
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+  }
+}
